@@ -26,9 +26,5 @@ namespace ADP.Assignment.Service
                     services.Configure<MathOptions>(hostContext.Configuration.GetSection("MathOptions"));
                     services.AddHostedService<Worker>();
                 });
-
-
-        //services.AddScoped<IRestService, RestService>()
-        //                                .AddSingleton<IRestPolicy, RestPolicy>());
     }
 }

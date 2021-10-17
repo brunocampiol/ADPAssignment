@@ -4,6 +4,6 @@ namespace ADP.Assignment.Domain.Interfaces
 {
     public interface IMathService
     {
-        Task CalculateInstructionAsync();
+        Task<string> CalculateInstructionAsync();
     }
 }

@@ -25,13 +25,17 @@ namespace ADP.Assignment.Service
             {
                 try
                 {
-                    await _mathService.CalculateInstructionAsync();
-                    await Task.Delay(1000, stoppingToken);
+                    var result = await _mathService.CalculateInstructionAsync();
+                    _logger.LogInformation(result);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, ex.GetErrorMsg());
-                }                
+                }
+                finally
+                {
+                    await Task.Delay(1000, stoppingToken);
+                }
             }
         }
     }
