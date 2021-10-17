@@ -30,14 +30,14 @@ namespace ADP.Assignment.Domain.Services
 
         private async Task SubmitMathResult(MathResult mathResult)
         {
-            var httpResult = await _restService.ExecutePostRequestAsync(_mathOptions.UrlBase, _mathOptions.ResourceSubmitTask, mathResult.ToJson());
+            var httpResult = await _restService.PostRequestAsync(_mathOptions.UrlBase, _mathOptions.ResourceSubmitTask, mathResult.ToJson());
 
             if (httpResult.StatusCode != HttpStatusCode.OK) throw new ApplicationException($"Invalid http response '{httpResult.StatusCode}' -> '{httpResult.Content}'");
         }
 
         private async Task<MathOperation> GetMathOperation()
         {
-            var httpResult = await _restService.ExecuteGetRequestAsync(_mathOptions.UrlBase, _mathOptions.ResourceGetTask);
+            var httpResult = await _restService.GetRequestAsync(_mathOptions.UrlBase, _mathOptions.ResourceGetTask);
 
             if (httpResult.StatusCode != HttpStatusCode.OK) throw new ApplicationException($"Invalid http response '{httpResult.StatusCode}' -> '{httpResult.Content}'");
 
