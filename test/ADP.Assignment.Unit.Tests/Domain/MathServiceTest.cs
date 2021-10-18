@@ -51,33 +51,27 @@ namespace ADP.Assignment.Unit.Tests.Domain
 
             // Act - what is being tested
             var result = await mathService.CalculateInstructionAsync();
-
+             
             // Assemble - what is optionally needed to perform the assert
             // Assert - the actual assertions
             Assert.NotNull(result);
+            Assert.True(result.MathOperationResult.Result == 0);
         }
 
         [Fact]
-        public async Task WhenDividingByZero_ExpectsDivideByZeroException()
+        public async Task WhenInvalidData_ExpectsDivideByZeroException()
         {
             // Arrange - setup
-            var mathOperation = new MathOperation()
-            {
-                Id = Guid.NewGuid(),
-                Left = 1,
-                Right = 0,
-                Operation = "division"
-            };
 
             _restService.Setup(x => x.GetRequestAsync(It.IsAny<string>(), It.IsAny<string>()))
-                        .Returns(Task.FromResult((mathOperation.ToJson(), HttpStatusCode.OK)));
+                        .Returns(Task.FromResult((string.Empty, HttpStatusCode.BadRequest)));
 
             var mathService = new MathService(_mathOptions, _restService.Object);
 
             // Act - what is being tested
             // Assemble - what is optionally needed to perform the assert
             // Assert - the actual assertions
-            await Assert.ThrowsAsync<DivideByZeroException>(() => mathService.CalculateInstructionAsync());
+            await Assert.ThrowsAsync<ApplicationException>(() => mathService.CalculateInstructionAsync());
         }
     }
 }
