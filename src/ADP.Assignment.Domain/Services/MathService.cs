@@ -21,20 +21,34 @@ namespace ADP.Assignment.Domain.Services
             _restService = restService ?? throw new ArgumentNullException(nameof(restService));
         }
 
-        public async Task<string> CalculateInstructionAsync()
+        public async Task<MathResult> CalculateInstructionAsync()
         {
             var mathOperation = await GetMathOperation();
-            var mathResult = ExecuteMathOperation(mathOperation);
-            return await SubmitMathResult(mathResult);
+            var mathOperationResult = ExecuteMathOperation(mathOperation);
+            var mathResult = await SubmitMathResult(mathOperationResult);
+
+            mathResult.MathOperation = mathOperation;
+            mathResult.MathOperationResult = mathOperationResult;
+
+            return mathResult;
         }
 
-        private async Task<string> SubmitMathResult(MathResult mathResult)
+        private async Task<MathResult> SubmitMathResult(MathOperationResult mathOperationResult)
         {
-            var httpResult = await _restService.PostRequestAsync(_mathOptions.UrlBase, _mathOptions.ResourceSubmitTask, mathResult.ToJson());
+            var httpResult = await _restService.PostRequestAsync(_mathOptions.UrlBase, _mathOptions.ResourceSubmitTask, mathOperationResult.ToJson());
+            var mathResult = new MathResult();            
 
-            if (httpResult.StatusCode != HttpStatusCode.OK) throw new ApplicationException($"Invalid http response '{httpResult.StatusCode}' -> '{httpResult.Content}'");
+            if (httpResult.StatusCode == HttpStatusCode.OK)
+            {
+                mathResult.IsSuccess = true;
+            }
+            else
+            {
+                mathResult.IsSuccess = false;
+                mathResult.ErrorInformation = $"Invalid http response '{httpResult.StatusCode}' -> '{httpResult.Content}'";
+            }
 
-            return httpResult.Content;
+            return mathResult;
         }
 
         private async Task<MathOperation> GetMathOperation()
@@ -46,15 +60,15 @@ namespace ADP.Assignment.Domain.Services
             return httpResult.Content.ToObject<MathOperation>();
         }
 
-        private MathResult ExecuteMathOperation(MathOperation mathOperation)
+        private MathOperationResult ExecuteMathOperation(MathOperation mathOperation)
         {
-            var mathResult = new MathResult();
+            var mathResult = new MathOperationResult();
 
             switch (mathOperation.Operation)
             {
                 case "division":
                     mathResult.Id = mathOperation.Id;
-                    mathResult.Result = mathOperation.Left / mathOperation.Right;
+                    mathResult.Result = (double)mathOperation.Left / (double)mathOperation.Right;
                     break;
                 case "subtraction":
                     mathResult.Id = mathOperation.Id;
@@ -62,7 +76,7 @@ namespace ADP.Assignment.Domain.Services
                     break;
                 case "multiplication":
                     mathResult.Id = mathOperation.Id;
-                    mathResult.Result = mathOperation.Left * mathOperation.Right;
+                    mathResult.Result = (double)mathOperation.Left * (double)mathOperation.Right;
                     break;
                 case "addition":
                     mathResult.Id = mathOperation.Id;

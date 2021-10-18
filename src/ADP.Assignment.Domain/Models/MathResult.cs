@@ -1,10 +1,10 @@
-﻿using System;
-
-namespace ADP.Assignment.Domain.Models
+﻿namespace ADP.Assignment.Domain.Models
 {
     public class MathResult
     {
-        public Guid Id { get; set; }
-        public long Result { get; set; }
+        public bool IsSuccess { get; set; }
+        public string ErrorInformation { get; set; }
+        public MathOperation MathOperation { get; set; }
+        public MathOperationResult MathOperationResult { get; set; }
     }
 }

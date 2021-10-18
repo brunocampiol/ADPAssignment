@@ -26,11 +26,12 @@ namespace ADP.Assignment.Service
                 try
                 {
                     var result = await _mathService.CalculateInstructionAsync();
-                    _logger.LogInformation(result);
+                    if (result.IsSuccess) _logger.LogInformation(result.ToJson());                    
+                    else _logger.LogError(result.ToJson());
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, ex.GetErrorMsg());
+                    _logger.LogCritical(ex, ex.GetErrorMsg());
                 }
                 finally
                 {
